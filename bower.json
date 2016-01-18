@@ -1,0 +1,62 @@
+{
+  "name": "ascentjet.com",
+  "version": "0.0.0",
+  "authors": [
+    "Davor Bagarić <davor.bagaric@rebellis.hr>"
+  ],
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.15",
+    "angular-animate": "~1.3.15",
+    "angular-aria": "~1.3.15",
+    "angular-chosen-localytics": "~1.0.7",
+    "angular-cookies": "~1.3.15",
+    "angular-jquery-timepicker": "~0.4.1",
+    "angular-local-storage": "~0.2.2",
+    "angular-mask": "~3.0.12",
+    "angular-messages": "~1.3.15",
+    "angular-resource": "~1.3.15",
+    "angular-route": "~1.3.15",
+    "angular-sanitize": "~1.3.15",
+    "angular-slick": "~0.2.1",
+    "angular-smoothscroll": "~1.1.1",
+    "angular-touch": "~1.3.15",
+    "angular-ui-date": "~0.0.7",
+    "angular-ui-select": "~0.12.0",
+    "checklist-model": "~0.2.4",
+    "fancybox": "~2.1.5",
+    "jquery": "~1.8",
+    "jquery.inputmask": "~3.1.63",
+    "ngDialog": "~0.4.0",
+    "ngSmoothScroll": "~1.7.1",
+    "ngSticky": "~1.7.9",
+    "select2": "~4.0.0",
+    "slick": "*",
+    "ui-autocomplete": "~0.6.1",
+    "js-cookie": "~2.0.3"
+  },
+  "devDependencies": {
+    "ng-biscuit": "~0.2.1",
+    "angular-google-maps": "~2.1.1",
+    "selectize": "~0.12.1",
+    "angular-selectize2": "~1.2.1",
+    "angular-recaptcha": "~2.2.5",
+    "jquery-placeholder": "~2.3.0",
+    "angular-shims-placeholder": "~0.4.6",
+    "jquery-validation": "~1.14.0"
+  }
+}

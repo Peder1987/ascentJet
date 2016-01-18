@@ -1,0 +1,6 @@
+export BASE_DIR=$PWD/../
+export PREVIEW_DIR=/home/revolucija/webapps/ascent_jet/code/ascent_jet/common/templates/preview
+export PYTHONPATH=$PWD:$PWD/ascent_jet:$PYTHONPATH
+export DJANGO_SETTINGS_MODULE=ascent_jet.settings
+source ../env/bin/activate
+export DATABASE_URL=postgres://ascent_jet:XiRs8axTwmgGA4UL@localhost:5432/ascent_jet

@@ -1,0 +1,15 @@
+Django==1.7.1
+Pillow==2.9.0
+dj-database-url==0.3.0
+-e git+https://github.com/revolucija/django-autoslug-field@1b4d847ba074957f9dad71a19e85462f2168602f#egg=django_autoslug_field-master
+django-grappelli==2.6.3
+django-mptt==0.6.1
+django-tinymce==1.5.3
+djangorestframework==2.4.4
+psycopg2==2.5.4
+requests==2.6.2
+django-extensions==1.5.2
+django-cors-headers==1.1.0
+django-sslserver==0.15
+django-recaptcha==1.0.4
+django-imagekit==3.2.7
