@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 import logging
+import os, sys
+from django.http import HttpResponse
 
 from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
@@ -7,8 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from .api import get_flight_request, get_flight_requests, get_offer_request
+from .api import get_flight_request, get_flight_requests, get_offer_request, aircraft_images
 
+from fpdf import FPDF
 
 # Get an instance of a logger
 logger = logging.getLogger('ascent_jet.custom')
@@ -27,6 +30,140 @@ OFFER_UPDATED - price changed for allready paid offer
 OFFER_NOT_AVAILABLE - offer revoked by operator
 OFFER_CONFIRMED_BY_OPERATOR - offer was paid by customer and operator confirmed availability
 """
+
+class PDF(FPDF):
+    def header(self):
+        # Logo
+        self.set_font('Arial', 'B', 15)
+        # Move to the right
+        self.cell(80)
+        # Title
+        logo_path = os.getcwd() + '/ascent_jet/media/images/logo.png'
+        self.image(logo_path, 85, 10, 45)
+        #self.cell(30, 10, 'Title', 1, 0, 'C')
+        # Line break
+        self.ln(10)
+
+    # Page footer
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Page number
+        self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
+    def __unicode__(self):
+        return self.name
+
+def generate_pdf(self, **kwargs):
+    # Instantiation of inherited class
+    # get the offer infos
+
+    invoice = []
+    if kwargs.get('id', None) is not None:
+        invoice = get_flight_request(kwargs['id'], self.COOKIES)
+        if invoice:
+            if invoice.offers:
+                for offer in invoice.offers:
+
+                    pdf = PDF()
+                    pdf.alias_nb_pages()
+                    pdf.add_page()
+
+                    #pdf.cell(0, 10, offer.provider, 0, 1)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Aircraft / Type :', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, offer.aircraft_type + ' / ' + offer.aircraft_category, 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Price :', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, offer.currency + ' ' + offer.price, 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Offer created :', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, offer.created_date, 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Flight Times:', 0)
+                    pdf.set_font('Times', '', 12)
+                    legIndex = 0
+                    for lo in offer.leg_offers:
+                        if legIndex == 0:
+                            pdf.cell(50, 10, lo.from_airport + ' (' + lo.from_code + ')  -  ' + lo.to_airport + ' (' + lo.to_code + ')  -  '
+                                + lo.flight_time_hrs + 'h ' + lo.flight_time_min + 'm', 0)
+                        else:
+                            pdf.ln(6)
+                            pdf.cell(50, 10, '', 0)
+                            pdf.cell(50, 10, lo.from_airport + ' (' + lo.from_code + ')  -  ' + lo.to_airport + ' (' + lo.to_code + ')  -  '
+                                     + lo.flight_time_hrs + 'h ' + lo.flight_time_min + 'm', 0)
+
+                        legIndex += 1
+
+                    pdf.ln(8)
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Passengers:', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, str(offer.leg_offers[0].pax), 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Baggage:', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, invoice.baggage, 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Additional Requests:', 0)
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, str(invoice.additional_info), 0)
+                    pdf.ln(8)
+
+                    pdf.ln(6)
+                    pdf.set_font('Arial', 'B', 14)
+                    pdf.cell(50, 10, 'Aircraft Detail')
+
+                    pdf.ln(8)
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Tail Number:')
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, str(offer.tail_number), 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Year of construction:')
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, str(offer.constructed), 0)
+                    pdf.ln(8)
+
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(50, 10, 'Number of seats:')
+                    pdf.set_font('Times', '', 12)
+                    pdf.cell(0, 10, str(offer.seats), 0)
+                    pdf.ln(8)
+
+                    #pdf.cell(50, 10, '')
+                    #for image in offer.image_ids:
+                        #if image['type'] == 'AIRCRAFT_IMAGE':
+                            #aircraft_img_url = str(offer.aircraft_id) + '/' + str(image['id'])
+                            #aircraft_img_url = 'http://ascentjet.com/rest/aircraft/images/74/202'
+                            #aircraft_img_path = aircraft_images(aircraft_img_url, self.COOKIES)
+                            #pdf.image(aircraft_img_path, 50, 10, 33)
+                            #pdf.image(aircraft_img_url, 50, 10, 45)
+
+                    pdf.output('invoice.pdf', 'F')
+                    response = HttpResponse(content_type='application/pdf')
+                    response.write(pdf.buffer)
+
+                    return response
+        else:
+            return None
 
 
 class FlightView(TemplateView):

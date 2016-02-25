@@ -23,10 +23,12 @@ class IndexView(ListView):
         context = super(IndexView, self).get_context_data(*args, **kwargs)
         context['snippets'] = Snippet.objects.all()
         try:
-            context['hero_image'] = random.choice(HomePageImage.objects.filter(header=True))
+            #context['hero_image'] = random.choice(HomePageImage.objects.filter(header=True))
+            context['hero_image'] = HomePageImage.objects.filter(header=True)
             context['body_image'] = HomePageImage.objects.filter(body=True)[0]
         except:
             pass
+        # print context['hero_image']
         return context
 
 index = IndexView.as_view()

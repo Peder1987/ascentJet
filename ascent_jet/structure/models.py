@@ -22,7 +22,7 @@ class Article(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse_lazy('structure:node_detail', kwargs={'slug': self.node.slug})
+        return reverse_lazy('structure:n    ode_detail', kwargs={'slug': self.node.slug})
 
 
 class Node(MPTTModel):

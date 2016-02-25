@@ -49,7 +49,7 @@
     initUI: function() {
       $('.datepicker:visible').datepicker();
       $('.autocomplete:visible').autocomplete({
-        source: places,
+        source: places
       });
       // $('a.popup').webuiPopover({
       //   delay: {
@@ -408,6 +408,14 @@
         style:        'offer'
       });
 
+      $('#empty-leg-date.webui-tooltip').webuiPopover({
+        width:        '330',
+        arrow:        false,
+        animation:    'pop',
+        content:      $('#tooltip-emptyLegStart').html(),
+        style:        'emptyLegStart'
+      });
+
       $('a.popover').webuiPopover({
         content:      $('#popover-content').html(),
         placement:    'top',
@@ -485,3 +493,15 @@
 })();
 
 AscentJet.init();
+$(function() {
+    if(navigator.userAgent.indexOf('Firefox') != -1) {
+        $('body').addClass('firefox')
+    }
+})
+$('.bxslider').bxSlider({
+    speed: 6000,
+    pause: 5000,
+    auto: true,
+    mode: 'fade',
+    preloadImages: 'all'
+});

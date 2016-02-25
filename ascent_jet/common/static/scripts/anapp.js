@@ -24,7 +24,7 @@ angular
     'webUI',
     'equalModule',
     'slick',
-    'ng.shims.placeholder',
+    'ng.shims.placeholder'
   ], function($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
@@ -130,22 +130,32 @@ angular
   .config(['$routeProvider', '$locationProvider', '$httpProvider', function($routeProvider, $locationProvider, $httpProvider, $cookieStore) {
     $httpProvider.interceptors.push(function($q, $window, cookieStore, $cookies) {
       return {
+        'request': function(config){
+            return config;
+        },
+        'response': function(response) {
+            return response;
+        },
         'responseError': function(response) {
           if(response.status == 403 || response.status == 401  || response.status == 405) {
             cookieStore.put('logged-in', false, { path: "/" });
             cookieStore.remove('JSESSIONID', false, { path: "/" });
             cookieStore.remove('user', false, { path: "/" });
             cookieStore.remove('userMail', false, { path: "/" });
-            $window.location = '/';
+            //$window.$scope.$broadcast('loginFailed');
+            //$window.location = '/';
+            return response;
           }
         }
       };
     });
     $httpProvider.defaults.withCredentials = true;
-    $httpProvider.defaults.useXDomain = true;
+    /*$httpProvider.defaults.useXDomain = true;*/
+    $httpProvider.defaults.headers['Access-Control-Allow-Origin'] = 'http://localhost:8000';
+    /*$httpProvider.defaults.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT';*/
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
     $httpProvider.defaults.headers.post = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
     }
     // $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     // $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';

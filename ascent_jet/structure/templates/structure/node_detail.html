@@ -2,9 +2,9 @@
 {% block title %}{{ page_title }} - Ascent Jet{% endblock %}
 
 {% block content %}
-<section class="image first article bottom-light-gray top-light-gray" style="background-image:url('{{ node.image.resource.url }}');"></section>
+<section class="image slanted first article bottom-light-gray top-light-gray" style="background-image:url('{{ node.image.resource.url }}');"></section>
 {% for article in node.sorted_article_set.all %}
-<section class="image light-gray bottom-white">
+<section class="image slanted light-gray bottom-white">
   <div class="container">
     <div class="side">
       {% if subnavigation %}

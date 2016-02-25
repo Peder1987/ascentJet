@@ -93,7 +93,7 @@ angular.module('ascentApp')
     return $resource("http://ascentjet.com/rest/security/:id", {}, {
       login: {
         method: 'PUT',
-        isArray: false,
+        isArray: false
       }
     });
   });
@@ -163,7 +163,7 @@ angular.module('ascentApp')
     return $resource("http://ascentjet.com/rest/secured/request/passengers/:id", {}, {
       create: {
         method: 'POST',
-        isArray: false,
+        isArray: false
       }
     });
   });
@@ -183,7 +183,7 @@ angular.module('ascentApp')
     return $resource("http://ascentjet.com/rest/secured/request/additional/:id", {}, {
       update: {
         method: 'POST',
-        isArray: false,
+        isArray: false
       }
     });
   });

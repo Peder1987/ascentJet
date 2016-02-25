@@ -91,15 +91,15 @@ angular.module('ascentApp')
   },
   {
     code: 'EUR',
-    name: 'Price (€)'
+    name: 'Price (EUR)'
   },
   {
     code: 'USD',
-    name: 'Price ($)'
+    name: 'Price (USD)'
   },
   {
     code: 'GBP',
-    name: 'Price (£)'
+    name: 'Price (GBP)'
   }
   ];
 
@@ -116,33 +116,41 @@ angular.module('ascentApp')
   $scope.popupInfo = {
     title: 'Title...',
     content: 'Contents....',
-    placement: 'left',
+    placement: 'left'
   }
+
+  $scope.loginModalFailed = false;
 
   $scope.processLogin = function(valid) {
     if (valid) {
       Login.login($scope.login, function(data, headers) {
-        cookieStore.put('logged-in', true, { path: "/" });
-        cookieStore.put('JSESSIONID', headers('SESSIONID'), { path: "/" });
-        cookieStore.put('user', data.userId, { path: "/" });
-        $scope.user = {
-          email: data.userName,
-          id: data.userId,
-        }
+        if( data.userId != null && headers('SESSIONID') != '' ) {
+            cookieStore.put('logged-in', true, { path: "/" });
+            cookieStore.put('JSESSIONID', headers('SESSIONID'), { path: "/" });
+            cookieStore.put('user', data.userId, { path: "/" });
+            $scope.user = {
+                email: data.userName,
+                id: data.userId,
+            }
 
-        ngDialog.close($scope.dialog.id);
+            ngDialog.close($scope.dialog.id);
 
-        $timeout(function () {
-          Account.get({id: data.userId}, function(data) {
-            cookieStore.put('userMail', data.firstName + " " + data.lastName, { path: "/" });
-            // $window.location.reload();
-            
-            $timeout(function (){
-              $scope.submit();
+            $timeout(function () {
+                Account.get({id: data.userId}, function (data) {
+                    cookieStore.put('userMail', data.firstName + " " + data.lastName, { path: "/" });
+                    // $window.location.reload();
+
+                    $timeout(function () {
+                        $scope.submit();
+                    }, 500);
+
+                });
             }, 500);
-
-          });
-        }, 500);
+        } else {
+            $scope.loginModalFailed = true;
+            angular.element(document).find('form[name="loginModal"] input[name="userName"]').addClass('ng-dirty ng-invalid-required');
+            angular.element(document).find('form[name="loginModal"] input[name="password"]').addClass('ng-dirty ng-invalid-required');
+        }
       });
     }
   }
@@ -161,10 +169,6 @@ angular.module('ascentApp')
     elm.target.closest('div.images').hide();
     elm.target.closest('div.images').find(cont).show();
   }
-
-
-
-
 
 });
 
@@ -457,10 +461,13 @@ angular.module('ascentApp')
 angular.module('ascentApp')
 .controller('LoginController', function ($scope, $http, $log, $rootScope, $cookies, $cookieStore, $window, $routeParams, $compile, $filter, Login, Account, cookieStore, Logout) {
   $reloadRoot = $window.location.href;
+  $scope.loginFailed = false;
+  //$scope.loginForm.userName.$error.loginFailed = false;
+  //$scope.loginForm.password.$error.loginFailed = false;
   $scope.account = {}
   $scope.login = {
     userName: "",
-    password: "",
+    password: ""
   }
 
   $scope.$watch(function() { return cookieStore.get('userMail'); }, function() {
@@ -479,18 +486,25 @@ angular.module('ascentApp')
   $scope.create = function() {
     if ($scope.loginForm.$valid) {
       Login.login($scope.login, function(data, headers) {
-        cookieStore.put('logged-in', true, { path: "/" });
-        cookieStore.put('JSESSIONID', headers('SESSIONID'), { path: "/" });
-        cookieStore.put('user', data.userId, { path: "/" });
-        $scope.user = {
-          email: data.userName,
-          id: data.userId,
+        if( data.userId != null && headers('SESSIONID') != '' ) {
+            cookieStore.put('logged-in', true, { path: "/" });
+            cookieStore.put('JSESSIONID', headers('SESSIONID'), { path: "/" });
+            cookieStore.put('user', data.userId, { path: "/" });
+            $scope.user = {
+                email: data.userName,
+                id: data.userId
+            }
+            Account.get({id: cookieStore.get('user')}, function (data) {
+                cookieStore.put('userMail', data.firstName + " " + data.lastName, { path: "/" });
+                // $window.location.href = '/';
+                $window.location.href = $reloadRoot;
+            });
+        } else {
+            /* if login is failed */
+            $scope.loginFailed = true;
+            angular.element(document).find('input[name="userName"]').addClass('ng-dirty ng-invalid ng-invalid-required');
+            angular.element(document).find('input[name="password"]').addClass('ng-dirty ng-invalid ng-invalid-required');
         }
-        Account.get({id: cookieStore.get('user')}, function(data) {
-          cookieStore.put('userMail', data.firstName + " " + data.lastName, { path: "/" });
-          // $window.location.href = '/';
-          $window.location.href = $reloadRoot;
-        });
       });
     }
   }
@@ -575,7 +589,8 @@ angular.module('ascentApp')
 angular.module('ascentApp')
   .controller('PassangersController', function ($scope, $http, $cookies, $window, $routeParams, $compile, $filter, Passanger) {
     $scope.request = {};
-    $scope.request.offerId = $routeParams.id;
+    $scope.request.offerId = $routeParams.id.split('-')[0];
+    $scope.offerNo = $routeParams.id.split('-')[1];
     $scope.request.passengers = [{
       title: 'Mr',
       firstName: '',
@@ -606,7 +621,7 @@ angular.module('ascentApp')
     $scope.submit = function(valid) {
       if(valid) {
         Passanger.create($scope.request, function(data) {
-          $window.location.href = '/flights/booking/#/finish/' + $routeParams.id;
+          $window.location.href = '/flights/booking/#/finish/' + $routeParams.id.split('-')[0];
         });
       }
     }
@@ -631,6 +646,10 @@ angular.module('ascentApp')
     var path = $location.path();
     var url = $window.location.pathname;
 
+    $scope.totalItems = 0;
+    $scope.currentPage = 1;
+    $scope.pagination = {current: 1, last: 0};
+
     $scope.cleared = true;
 
     if(url == '/') {
@@ -651,22 +670,21 @@ angular.module('ascentApp')
       page: 1,
       pageSize: 5
     }
-    if(url == '/get-a-quote/') {
-      $scope.empty = localStorageService.get('emptyLegQueryInfo') != null ? localStorageService.get('emptyLegQueryInfo') : $scope.empty;
-      if (request = localStorageService.get('emptyLegQuery') != null) {
-        request = localStorageService.get('emptyLegQuery');
-        $scope.cleared = false;
-      } else {
-        request = { page: 1, pageSize: 10 };
-      };
 
-      Empty.save(request, function(data) {
+    $scope.emptyLegGet = function(request) {
+        Empty.save(request, function(data) {
+        $scope.totalItems = data.count;
+        $scope.pagination.last = data.count;
+        $scope.pages = [];
+        for(var j=1; j<$scope.totalItems+1; j++){
+            $scope.pages.push(j);
+        }
+
         localStorageService.set('emptyLegQuery', null);
         localStorageService.set('emptyLegQueryInfo', null);
         $scope.emptyResults = {};
         $scope.emptyResults.count = data.count;
         $scope.emptyResults.legs = [];
-        // uiGmapIsReady.promise().then(function() {
           angular.forEach(data.legs, function(i, v) {
             var bound = new google.maps.LatLngBounds();
             bound.extend( new google.maps.LatLng(i.airportFromObj.latitude, i.airportFromObj.longitude) );
@@ -694,14 +712,14 @@ angular.module('ascentApp')
               longitude: i.airportToObj.longitude,
               latitude: i.airportToObj.latitude,
               id: 1,
-              icon: '/media/static/images/marker.png',
+              icon: '/media/static/images/marker.png'
             });
             obj.marker = {
               icon: {
                 url: '/media/static/images/marker.png',
                 origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(12, 12)
-              },
+              }
             }
             obj.map = {
               center: {
@@ -730,13 +748,124 @@ angular.module('ascentApp')
                 color: '#323a45',
                 weight: 3
               },
-              visible: true,
+              visible: true
             },
             $scope.emptyResults.legs.push(obj);
           });
-        // });
+          angular.element(document).find('.empty-legs-hide .table-wrap').css('opacity', '1');
+          $scope.wait = false;
       });
+
     }
+
+    if(url == '/get-a-quote/') {
+      $scope.empty = localStorageService.get('emptyLegQueryInfo') != null ? localStorageService.get('emptyLegQueryInfo') : $scope.empty;
+      if (request = localStorageService.get('emptyLegQuery') != null) {
+        request = localStorageService.get('emptyLegQuery');
+        $scope.cleared = false;
+      } else {
+        request = { page: $scope.currentPage, pageSize: 1 };
+        angular.element(document).find('.empty-legs-hide .table-wrap').css('opacity', '0.1');
+        $scope.wait = true;
+      };
+      $scope.emptyLegGet(request);
+      /*Empty.save(request, function(data) {
+        $scope.totalItems = data.count;
+        $scope.pagination.last = data.count;
+        $scope.pages = [];
+        for(var j=1; j<$scope.totalItems+1; j++){
+            $scope.pages.push(j);
+        }
+
+        localStorageService.set('emptyLegQuery', null);
+        localStorageService.set('emptyLegQueryInfo', null);
+        $scope.emptyResults = {};
+        $scope.emptyResults.count = data.count;
+        $scope.emptyResults.legs = [];
+          angular.forEach(data.legs, function(i, v) {
+            var bound = new google.maps.LatLngBounds();
+            bound.extend( new google.maps.LatLng(i.airportFromObj.latitude, i.airportFromObj.longitude) );
+            bound.extend( new google.maps.LatLng(i.airportToObj.latitude, i.airportToObj.longitude) );
+            center = bound.getCenter();
+            obj = i;
+            obj.markers = [];
+            obj.bounds = {};
+            obj.line = {};
+            obj.bounds.northeast = {
+              longitude: i.airportFromObj.longitude,
+              latitude: i.airportFromObj.latitude
+            };
+            obj.bounds.southwest = {
+              longitude: i.airportToObj.longitude,
+              latitude: i.airportToObj.latitude
+            };
+            obj.markers.push({
+              longitude: i.airportFromObj.longitude,
+              latitude: i.airportFromObj.latitude,
+              id: 0,
+              icon: '/media/static/images/marker.png',
+            });
+            obj.markers.push({
+              longitude: i.airportToObj.longitude,
+              latitude: i.airportToObj.latitude,
+              id: 1,
+              icon: '/media/static/images/marker.png'
+            });
+            obj.marker = {
+              icon: {
+                url: '/media/static/images/marker.png',
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(12, 12)
+              }
+            }
+            obj.map = {
+              center: {
+                latitude: center.lat(),
+                longitude: center.lng()
+              },
+              zoom: 14,
+              control: {},
+              bounds: {},
+              visible: false,
+              pan: true
+            };
+            obj.line = {
+              id: 1,
+              path: [
+                {
+                  latitude: i.airportFromObj.latitude ,
+                  longitude: i.airportFromObj.longitude,
+                },
+                {
+                  longitude: i.airportToObj.longitude,
+                  latitude: i.airportToObj.latitude,
+                }
+              ],
+              stroke: {
+                color: '#323a45',
+                weight: 3
+              },
+              visible: true
+            },
+            $scope.emptyResults.legs.push(obj);
+          });
+      });*/
+    }
+
+    $scope.setCurrent = function(pageNo) {
+        if( pageNo <= $scope.pagination.last && pageNo > 0 && $scope.pagination.current != pageNo ) {
+            angular.element(document).find('.empty-legs-hide .table-wrap').css('opacity', '0.1');
+            $scope.wait = true;
+            $scope.pageNumber = pageNo;
+            $scope.pagination.current = pageNo;
+            request = {
+                page: $scope.pageNumber,
+                pageSize: 1
+            };
+            $scope.emptyLegGet(request);
+        }
+    }
+    /* pagination */
 
     $scope.emptyLegSearch = function() {
       localStorageService.set('emptyLegQuery', null);
@@ -786,8 +915,8 @@ angular.module('ascentApp')
                 url: '/media/static/images/marker.png',
                 origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(12, 12)
-              },
-            }
+              }
+            };
             obj.map = {
               center: {
                 latitude: center.lat(),
@@ -815,7 +944,7 @@ angular.module('ascentApp')
                 color: '#323a45',
                 weight: 3
               },
-              visible: true,
+              visible: true
             },
             $scope.emptyResults.legs.push(obj);
           });
@@ -880,6 +1009,7 @@ angular.module('ascentApp')
         request = {};
         request.legs = [];
         request.returnFlight = $scope.query.returnFlight;
+        flight_dates = [];
         angular.forEach($scope.query.legs, function(v,i) {
           request.legs.push({
             from: v.from,
@@ -888,7 +1018,12 @@ angular.module('ascentApp')
             time: $filter('date')(v.time, 'HH:mm'),
             passengers: v.passengers
           });
+          flight_dates.push(v.date)
         });
+        for(var i=0; i<flight_dates.length; i++) {
+
+        }
+        return;
         Quote.save(request, function(data) {
           if(data.id !== null) {
             //localStorageService.set('quote', data);
@@ -1073,13 +1208,46 @@ angular.module('ascentApp')
       $scope.selected = index;
     };
 
+    /*$scope.userLocation = {
+        lat: 51.219053,
+        lng: 4.404418
+    };*/
+    $scope.userLocation = {
+        lat: 59.913869,
+        lng: 10.752245
+    };
+
+    var geoLocationOptions = {enableHighAccuracy: true};
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+            $scope.userOptions = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+            console.log($scope.userOptions);
+
+            $scope.userLocation.lat = JSON.parse(JSON.stringify($scope.userOptions)).lat;
+            $scope.userLocation.lng = JSON.parse(JSON.stringify($scope.userOptions)).lng;
+
+            console.log($scope.userLocation.lat);
+
+        },
+        function(error) {
+            alert('Unable to get location: ' + error.message);
+        }, geoLocationOptions);
+
     $timeout(function () {
       $scope.map = {
-        center: {
+        /*center: {
           latitude: 51.219053,
           longitude: 4.404418
+        },*/
+        /*center: {
+          latitude: 59.913869,
+          longitude: 10.752245
+        },*/
+        center: {
+            latitude: $scope.userLocation.lat,
+            longitude: $scope.userLocation.lng
         },
-        zoom: 14,
+        zoom: 12,
         control: {},
         bounds: {},
         window: {
@@ -1088,12 +1256,22 @@ angular.module('ascentApp')
           closeClick: function() {
             this.show = false;
           },
-          options: {} // define when map is ready
+          options: {
+
+          } // define when map is ready
         },
         infoWindowWithCustomClass: {
-          coords: {
+          /*coords: {
             latitude: 51.219053,
             longitude: 4.404418
+          },*/
+          /*coords: {
+            latitude: 59.913869,
+            longitude: 10.752245
+          },*/
+          coords: {
+            latitude: $scope.userLocation.lat,
+            longitude: $scope.userLocation.lng
           },
           options: {
             boxClass: 'custom-info-window',
@@ -1101,13 +1279,13 @@ angular.module('ascentApp')
             disableAutoPan: true,
             visible: true
           },
-          show: true,
+          show: true
         }
       };
     }, 100);
 
 
-    $scope.options = { scrollwheel: false, maxZoom: 12};
+    $scope.options = { scrollwheel: false, maxZoom: 20};
 
     $scope.windowOptions = {
       visible: true
@@ -1148,8 +1326,6 @@ angular.module('ascentApp')
       });
     };
 
-
-
     $scope.markers = [];
 
     $scope.airportSearch = function() {
@@ -1167,7 +1343,7 @@ angular.module('ascentApp')
           )
         });
         if($scope.markers.length == 1) {
-          $scope.map.zoom = 14;
+          $scope.map.zoom = 10;
         }
       });
     }

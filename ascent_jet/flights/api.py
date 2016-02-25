@@ -36,12 +36,24 @@ def parse_flight_list(f):
             if toAirportObject:
                 leg.to_airport = toAirportObject.get('city', None)
                 leg.to_code = toAirportObject.get('iataCode', None)
+            leg.date = l.get('date')
+            leg.time = l.get('time')
             legs.append(leg)
     flight.legs = legs
     flight.status = f.get('status', None)
 
     return flight
 
+# get the aircraft images from ascentJet
+def aircraft_images(path, cookies):
+    aircraft_img_url = 'http://ascentjet.com/rest/aircraft/images/' + str(path)
+    try:
+        response = requests.get(url=aircraft_img_url, cookies=cookies)
+        f = json.loads(response.text)
+        return f
+    except Exception as e:
+        logger.info("get_aircraft_image, Exception: %s" % e)
+        return None
 
 # based on dictionary containing flight details (f), parse flight details, create and return Flight object
 def parse_flight(f):
