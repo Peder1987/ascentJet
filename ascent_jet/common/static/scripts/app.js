@@ -24,6 +24,7 @@
       this.initDetailsButton();
       this.initMobileDetailsButton();
       this.switchGallery();
+      this.initGallery();
       this.switchSmallGallery();
       this.switchMobileGallery();
       if($('div.map-holder').length > 0) {
@@ -43,6 +44,8 @@
       this.cookieMessage();
       this.tooltipInit();
       this.toggleFlightTimes();
+      this.contactForm();
+      this.credentialUpdate();
       // this.randomImage();
     },
 
@@ -59,12 +62,22 @@
       //   closeable: true
       // });
 
-      $(window).on('scroll', function() {
-          var sticky = $('#fixed-top'),
-          scroll = $(window).scrollTop();
-          if (scroll >= 70) sticky.addClass('fixed');
-          else sticky.removeClass('fixed');
-      });
+      scroll_func = function(event) {
+          var sticky = $('#fixed-top');
+          if(location.pathname == '/about-us/contact/add/')
+            return;
+
+          var curPos = $(window).scrollTop();
+          if (parseInt(curPos) >= 70) {
+              sticky.addClass('fixed');
+              $('.ascent-logo').addClass('wide');
+          }
+          else {
+              sticky.removeClass('fixed');
+              $('.ascent-logo').removeClass('wide');
+          }
+      }
+      $(window).scroll(scroll_func);
     },
 
     initTabs: function() {
@@ -269,6 +282,13 @@
       });
     },
 
+    initGallery: function(obj) {
+      $(obj).find('div.switch a').removeClass('active');
+      $(obj).find('div.images div.gallery').removeClass('show');
+      $(obj).find('div.switch a').first().addClass('active')
+      $(obj).find('div.images div.gallery').first().addClass('show');
+    },
+
     switchSmallGallery: function() {
       $('div.column.galleries ul li a').on('click', function(e) {
         e.preventDefault();
@@ -385,6 +405,9 @@
       $('.login-form').click(function(event){
         event.stopPropagation();
       });
+      if(location.pathname != '/') {
+        $('div.toolbar a.login').removeClass('active');
+      }
     },
 
     cookieMessage: function() {
@@ -445,6 +468,26 @@
         $(this).toggleClass('open');
       });
     },
+
+    contactForm: function() {
+      if(location.pathname == '/about-us/contact/add/') {
+        if(angular.element(document).find('#contactForm span.alert-danger').length) {
+          var contactPos = angular.element(document).find('#contactForm').offset().top;
+          $("body,html").animate({scrollTop: contactPos}, "slow");
+        }
+      }
+      else {
+        if($('input[name="contactSuccess"]').val()  == 1) {
+          var contactPos = angular.element(document).find('.contact-form').offset().top;
+          $("body,html").animate({scrollTop: contactPos}, "slow");
+        }
+      }
+    },
+    credentialUpdate: function() {
+      $('p span.pass-update-label').click(function(){
+        alert(event);
+      });
+    }
   };
 
   window.AscentJet = AscentJet;
@@ -478,30 +521,158 @@
     return this.optional(element) ||  /^[-_a-z0-9]+(\.[-_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/.test(value);
   }, "Please enter a valid email address.");
 
-  // $('#contactForm').validate({
-  //   rules: {
-  //     email: {
-  //       required: true,
-  //       email_pattern: true
-  //     },
-  //   }
-  // });
-  
-  // $('#contactForm').placeholder();
-
-
 })();
 
 AscentJet.init();
+
 $(function() {
     if(navigator.userAgent.indexOf('Firefox') != -1) {
-        $('body').addClass('firefox')
+        $('body').addClass('firefox');
     }
 })
-$('.bxslider').bxSlider({
-    speed: 6000,
-    pause: 5000,
-    auto: true,
-    mode: 'fade',
-    preloadImages: 'all'
-});
+
+function GetIEVersion() {
+  var sAgent = window.navigator.userAgent;
+
+  var Idx = sAgent.indexOf("MSIE");
+
+  if (Idx > 0) {
+      return parseInt(sAgent.substring(Idx + 5, sAgent.indexOf(".", Idx)));
+  }else if (!!navigator.userAgent.match(/Trident\/7\./)) {
+      return 11;
+  } else if( navigator.userAgent.indexOf('Edge/') > 0 ){
+    return 12;
+  }
+  else
+    return 0;
+}
+
+if (GetIEVersion() > 0) {
+    $('body').addClass('ie');
+    fIE = true;
+}
+
+var imgDelay = 4000;
+var interval;
+var activeContainer = 1;
+var currentImg = 0;
+var animating = false;
+
+if(location.pathname.indexOf('legal') == 1) {
+    $('.image.slanted.first').css({"background-image": "url('/media/images/iStock_000016041408XLarge_q5.jpg')"})
+}
+if(location.pathname == '/') {
+    var sliderHeading = ['<h2>Pricing direct from operators</h2><p class="lead">We offer total transparency</p>',
+                         '<h2>Select an offer and buy online</h2><p class="lead">There\'s never been an easier way to book a taylor-made flight</p>',
+                         /*'<h2>A unique booking system</h2><p class="lead">We connect you directly to the operators. Ascent Jet\'s unique booking system enables you to solicit offers directly from qualified operators.  We use advanced technologies to match the aircraft to your requirements at the best prices.</p>',*/
+                         '<h2>A vast choice of private aircraft</h2><p class="lead">We select the aircraft best suited to your itineray and requirements</p>'
+                        ];
+
+    var navigate = function(direction) {
+        if(animating) {
+            return;
+        }
+
+        currentImg++;
+        if(currentImg == sliderImg.length + 1) {
+            currentImg = 1;
+        }
+
+        var currentContainer = activeContainer;
+        if(activeContainer == 1) {
+            activeContainer = 2;
+        } else {
+            activeContainer = 1;
+        }
+
+        showImage(sliderImg[currentImg - 1], currentContainer, activeContainer);
+
+    };
+
+    var currentZindex = -1;
+    var showImage = function(photoObject, currentContainer, activeContainer) {
+        animating = true;
+        currentZindex--;
+
+        jQuery("#bgImage" + activeContainer).css({
+            "background-image" : "url(" + photoObject + ")",
+            "display" : "block",
+            "z-index" : currentZindex
+        });
+
+        jQuery("#bgImage" + currentContainer).fadeOut(2500,function() {
+            $('.slider-heading').html(sliderHeading[currentImg-1]);
+            setTimeout(function() {
+                animating = false;
+            }, 2500);
+        });
+    };
+
+    navigate("next");
+    interval = setInterval(function() {
+        navigate("next");
+    }, imgDelay);
+
+    function slideMove(movSlide) {
+        clearInterval(sliderId);
+
+        $('.home.index').animate({
+            opacity: 0.7
+        }, 300, "linear", function() {
+            $('.home.index').animate({
+                opacity: 0.8
+            }, 300, "linear", function() {
+                $('.home.index').css('background-image', 'url(' + sliderImg[movSlide] + ')');
+                $('.home.index').animate({
+                    opacity: 1
+                }, 600, "linear", function () {
+                })
+            });
+        });
+
+        $('.slider-heading').html(sliderHeading[movSlide]);
+        sliderId = setInterval(function(){ slideShow(); }, 8000)
+    }
+    $('.slider-prev').on('click', function(){
+        if(slideIdx == 0)
+            slideIdx = 2;
+        else
+            slideIdx -= 1;
+        slideMove(slideIdx);
+    })
+    $('.slider-next').on('click', function(){
+        if(slideIdx == 2)
+            slideIdx = 0;
+        else
+            slideIdx += 1;
+        slideMove(slideIdx);
+    })
+    function slideShow() {
+        $('.home.index').css('background-image', 'url(' + sliderImg[slideIdx] + ')');
+        if(slideIdx >= 2)
+            slideIdx = 0;
+        else
+            slideIdx += 1;
+    }
+
+}
+if(location.pathname == "/why-ascent-jet/the-ascent-jet-difference/") {
+    $('.content-remove').find('p')[2].remove();
+    $('.content-remove').find('p')[2].remove();
+}
+
+if(location.pathname == '/flying-privately/a-guide-to-flying-privately/') {
+    $.preLoadImages = function() {
+    $.get($('link[rel="stylesheet"]')[0].href, function(data){
+        r = /url\(['|"]?(\S+\.(jpg)[^'(]*)['|"]?\)/ig;
+        while (match = r.exec(data)){
+                var cacheImage = document.createElement('img');
+                cacheImage.src = match[1];
+            }
+        });
+    }
+    $.preLoadImages()
+}
+$.fn.preloading = function(){
+
+}

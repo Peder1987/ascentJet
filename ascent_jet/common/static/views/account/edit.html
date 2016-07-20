@@ -61,7 +61,7 @@
       <p class="dark">
         <label for="country">Country</label>
         <span class="selectize-style">
-          <ui-select ng-model="account.customerInfo.countryId" theme="selectize" required>
+          <ui-select ng-model="account.customerInfo.countryId" ng-click="onSelect()" theme="selectize" required>
             <ui-select-match placeholder="Choose country">[[ $select.selected.name ]]</ui-select-match>
             <ui-select-choices repeat="item.id as item in countries | filter: $select.search" refresh="refreshCountries($select.countries)" refresh-delay="0">
               [[ item.name ]]
@@ -74,6 +74,68 @@
         <a href="/" class="btn empty">Cancel</a>
       </p>
     </form>
+
+    <div ng-if="additionalForm">
+    <!-- change a password -->
+    <div class="pass-change-form">
+        <form class="login" name="passwordUpdateForm" id="passwordUpdateForm" ng-submit="updatePassword(passwordUpdateForm.$valid)" novalidate>
+          <div ng-show="passMatch" class="alert alert-danger error-message">
+            <div>
+              The password entered do not match
+            </div>
+          </div>
+          <div class="update-form">
+            <div class="update-label">
+                <label class="pass-update-label" for="password" ng-click="passUpdateShow();">Change password</label>
+            </div>
+            <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+            <input style="display:none" type="text" name="fakeusernameremembered"/>
+            <input style="display:none" type="password" name="fakepasswordremembered"/>
+            <div class="passform-showhide" style="display: none">
+                <div ng-if="!passwordUpdated">
+                    <input type="password" name="password" ng-model="accountCredential.password" id="password" placeholder="Minimum 6 alphanumeric chars" equals="[[fake.repeat_password]]" ng-pattern="/^[a-zA-Z0-9]{6,}$/" ng-minlength="6" required />
+                    <input type="password" style="float: right;" name="repeat_password" ng-model="fake.repeat_password" placeholder="Confirm password" id="repeat_password" equals="[[accountCredential.password]]" ng-minlength="6" required />
+                    <input type="submit" name="submit" value="Reset password" class="btn password-update" />
+                    <a href="/profile/#/edit" ng-click="cancel('password', passwordUpdateForm)" class="btn empty">Cancel</a>
+                </div>
+                <div ng-if="passwordUpdated" style="margin-top: 10px;">
+                  <p class="center">
+                    The password was updated successfully.
+                  </p>
+                </div>
+            </div>
+          </div>
+        </form>
+    </div>
+    <!-- change a email -->
+    <div class="email-change-form">
+        <form class="login" name="emailUpdateForm" id="emailUpdateForm" ng-submit="updateEmail(emailUpdateForm.$valid, emailUpdateForm)" novalidate>
+          <div ng-show="emailMatch" class="alert alert-danger error-message">
+            <div>
+              The email entered do not match
+            </div>
+          </div>
+          <div class="update-form">
+            <div class="update-label">
+              <label class="email-update-label" for="email" ng-click="emailUpdateShow();">Change email</label>
+            </div>
+            <div class="emailform-showhide" style="display: none">
+                <div ng-if="!emailUpdated">
+                    <input name="email" type="email" ng-model="accountCredential.email" placeholder="Enter new email" id="email" equals="[[ confirm.email ]]" ng-pattern="/^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/" required>
+                    <input name="confirm-email" type="email" style="float: right;" placeholder="Confirm email"ng-model="confirm.email" id="confirm-email" equals="[[ accountCredential.email ]]" required>
+                    <input type="submit" name="submit" value="Reset email" class="btn email-update" />
+                    <a href="/profile/#/edit" ng-click="cancel('email', passwordUpdateForm)" class="btn empty">Cancel</a>
+                </div>
+                <div ng-if="emailUpdated" style="margin-top: 10px;">
+                  <p class="center">
+                    The email was updated successfully.
+                  </p>
+                </div>
+            </div>
+          </div>
+        </form>
+    </div>
+    </div>
   </div>
-  <div class="last-skew white"></div>
+
 </div>

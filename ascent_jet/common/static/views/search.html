@@ -7,7 +7,7 @@ right: 0px;
 left: 0px;
 }
 </style>
-<div class="tabs [[ class ]]">
+<div class="tabs [[ class ]]" ng-init="initmap()">
   <div class="navigation" ng-class="{fixed:boolChangeClass}">
     <a href="#/quote" data-target="#charter-quote" ng-class="{'active': activeTab === 'quote'}" ng-click="switchTabTo('quote')">Charter quote</a>
     <a href="#/empty" data-target="#empty-legs" ng-class="{'active': activeTab === 'empty'}" ng-click="switchTabTo('empty')">Empty legs</a>
@@ -15,7 +15,7 @@ left: 0px;
   <div id="charter-quote" class="tab" ng-class="{'show': activeTab === 'quote'}">
     <div class="tab-container">
       <form id="charter-quote-form" name="quoteForm" ng-submit="request(quoteForm.$valid)" novalidate>
-        <div class="row data clearfix" ng-class="{'custom additional': query.legs.length > 1}" ng-repeat="row in query.legs">
+        <div class="row data clearfix" ng-class="{'custom additional': query.legs.length > 1}" ng-repeat="row in query.legs track by $index">
           <p class="field horizontal custom" ng-show="query.legs.length > 1">
             Leg [[ $index + 1 ]]
           </p>
@@ -31,8 +31,8 @@ left: 0px;
           </p>
           <p class="field horizontal small">
             <label>
-              <input type="text" name="DateOfBirth" ng-model="row.date" id="date-[[ $index ]]" placeholder="Date" class="datepicker"
-                data-date-format="dd-mm-yyyy" ui-date="dateOptions" min-date="25-02-2016" required />
+              <input type="text" name="DateOfBirth" ng-click="clickClander($index)" ui-min-date="03-03-2016" ng-model="row.date"  id="date-[[ $index ]]" placeholder="Date" class="datepicker"
+                data-date-format="dd-mm-yyyy"  ui-date="dateOptions[$index]" required />
               <!-- <input type="text" name="DateOfBirth" ng-model="row.date" id="date-[[ $index ]]" placeholder="Date" class="datepicker"
                 ng-pattern="/(^(((0[1-9]|1[0-9]|2[0-8])[\/](0[1-9]|1[012]))|((29|30|31)[\/](0[13578]|1[02]))|((29|30)[\/](0[4,6,9]|11)))[\/](19|[2-9][0-9])\d\d$)|(^29[\/]02[\/](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)$)/"
                 data-date-format="dd-mm-yyyy" ui-date="dateOptions" required /> -->
@@ -44,10 +44,12 @@ left: 0px;
             </div>
           </p>
           <p class="field horizontal xsmall">
-            <input type="text" name="time" ng-model="row.time" class="timepicker" placeholder="HH:MM (24hrs)" mask="29:59" restrict="reject" required />
+            <input type="text" name="time" ng-model="row.time" autocomplete="off" class="timepicker" placeholder="HH:MM(24hrs)" mask="29:59" restrict="reject" required />
           </p>
-          <p class="field horizontal xxsmall">
-            <input type="number" name="passangers" ng-model="row.passengers" class="timepicker" ng-pattern="/^\d+$/" placeholder="PAX" min="1" required />
+          <p class="field horizontal xxsmall passenger" ng-mouseover="iconShow($index);" ng-mouseleave="iconHide($index);">
+            <input type="number" name="passangers" onkeypress="return event.charCode >= 48 && event.charCode <= 57" ng-model="row.passengers" class="timepicker" ng-pattern="/^\d+$/" placeholder="PAX" min="1" autocomplete="off" required />
+              <img class="up-icon" ng-show="row.mousein" ng-click="upPax($index);" src="/media/images/up.png">
+              <img class="down-icon" ng-show="row.mousein" ng-click="downPax($index);" src="/media/images/down.png">
           </p>
           <p class="field horizontal xmedium cta last" ng-show="$index == 0">
             <button class="btn" ng-click="submitted=true">Request quotes</button>
@@ -68,13 +70,16 @@ left: 0px;
     <h2 class="small" ng-if="url == '/get-a-quote/'">Airport finder</h2>
     <div ng-if="url == '/get-a-quote/'" class="tab-container map">
       <p class="lead small">
-        Enter address, country, airport name or code to locate an airport or airports nearest your required destination
+        Enter an address to find airports nearest your destination, or simply enter an airport name
       </p>
       <div class="form">
-        <form id="airport-search" name="airportFinder" ng-submit="airportSearch()" novalidate>
+        <form id="airport-search" name="airportFinder" ng-submit="" novalidate>
           <div class="row clearfix">
             <p class="field horizontal large">
-              <input type="text" ng-model="aircraftSearch.city" placeholder="Street name and/or city" />
+              <!-- <input type="text" ng-model="aircraftSearch.city" placeholder="Street name and/or city" /> -->
+              <!-- <input type="text" name="" ng-model="aircraftSearch.city" placeholder="Street name and/or city" class="autocomplete"
+                data-target="city" ng-value="" ui-autocomplete="airportSearchByAddr" /> -->
+              <input id="txtAddress" class="text" ng-click="mapShow('address')" g-places-autocomplete ng-model="aircraftSearch.city" placeholder="Street name and/or city" class="autocomplete" />
             </p>
             <!-- <p class="field horizontal medium">
               <span class="selectize-style">
@@ -87,34 +92,37 @@ left: 0px;
               </span>
             </p> -->
             <p class="field horizontal large">
-              <input type="text" ng-model="aircraftSearch.searchString" placeholder="Airport name or code" class="autocomplete" />
+              <input id="txtAirport"  type="text" ng-click="mapShow('airport')" ng-model="aircraftSearch.searchString" placeholder="Airport name or code" class="autocomplete"
+                 data-target="airCode" ng-value="" ui-autocomplete="airportSearchByCode"/>
             </p>
-            <p class="field horizontal large">
+            <!-- <p class="field horizontal large">
               <button class="btn">Find airport</button>
-            </p>
+            </p> -->
           </div>
         </form>
       </div>
       <div class="map-holder" style="position:relative; height:600px;">
-        <ui-gmap-google-map center="map.center" zoom="map.zoom" options="options" bounds="map.bounds" refresh="map">
-          <ui-gmap-markers models="markers" coords="'self'" icon="'icon'" fit="'true'">
-            <!-- <ui-gmap-windows show="show" options="map.infoWindowWithCustomClass.options">
-              <div class="popover-maps">
-                <h3>Paris, France (PAR)</h3>
-                <div class="icons">
-                  <span class="icon icon-tiny-jet active"></span>
-                  <span class="icon icon-small-jet active"></span>
-                  <span class="icon icon-regular-jet"></span>
-                  <span class="icon icon-medium-jet"></span>
-                  <span class="icon icon-large-jet"></span>
-                </div>
-                <p>14 km from Rua Da Piscina, Castelo Branco</p>
-                <a href="#" class="btn add-start">Add as starting point</a>
-                <a href="#" class="btn add-end">Add as destination</a>
-              </div>
-            </ui-gmap-windows> -->
+        <ui-gmap-google-map ng-if="mapByAddress" center="map.center" zoom="map.zoom" options="options" bounds="map.bounds" control="addressMapControl" refresh="map" ng-cloak>
+          <ui-gmap-markers models="markers" coords="'self'" icon="'icon'" fit="'true'"
+            events="map.markersEvents">
+          <!-- <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" icon="m.icon" idKey="m.id" fit="'true'"> -->
+            <ui-gmap-windows show="show">
+              <div>[[ mapInfo ]]</div>
+            </ui-gmap-windows>
           </ui-gmap-markers>
+          <!--<ui-gmap-window coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">-->
           <ui-gmap-window coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">
+            I'm a window with a custom class set via options.boxClass. I only work when googles
+            <a href ="//google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
+          </ui-gmap-window>
+        </ui-gmap-google-map>
+
+        <ui-gmap-google-map ng-if="mapByAirport" center="mapAirport.center" zoom="mapAirport.zoom" options="optionsAirport" bounds="mapAirport.bounds" control="airportMapControl" refresh="mapAirport" ng-cloak>
+          <ui-gmap-markers models="airportMarkers" coords="'self'" icon="icon" fit="'true'" dorebuildall="true" modelsbyref="false" events="mapAirport.markersEvents">
+          <!--<ui-gmap-marker ng-repeat="mark in airportMarkers" coords="mark.coords" icon="mark.icon" idKey="mark.id" fit="'true'">-->
+
+          </ui-gmap-markers>
+          <ui-gmap-window coords="mapAirport.infoWindowWithCustomClass.coords" isIconVisibleOnClick="true" options="mapAirport.infoWindowWithCustomClass.options">
             I'm a window with a custom class set via options.boxClass. I only work when googles
             <a href ="//google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
           </ui-gmap-window>
@@ -261,7 +269,8 @@ left: 0px;
                         <div class="gallery gallery-container show">
                           <slick init-onload="true" data="flight.aircraft.imageIds" ng-if="(flight.aircraft.imageIds | filter: { type: 'AIRCRAFT_IMAGE' }).length > 0">
                             <div ng-repeat="image in flight.aircraft.imageIds | filter: { type: 'AIRCRAFT_IMAGE' }">
-                              <img ng-src="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" width="430" height="240" />
+                              <img preload-image ng-src="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" width="430" height="240"
+                                 default-image="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" fallback-image="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" />
                             </div>
                           </slick>
                         </div>
@@ -274,9 +283,10 @@ left: 0px;
                             <dt>Seats</dt>
                             <dd>[[ flight.aircraft.seats ]]</dd>
                           </dl>
-                          <slick init-onload="false" data="flight.aircraft.imageIds" ng-show="(flight.aircraft.imageIds | filter: { type: 'FLOOR_PLAN' }).length > 0">
+                          <slick init-onload="true" data="flight.aircraft.imageIds" ng-if="(flight.aircraft.imageIds | filter: { type: 'FLOOR_PLAN' }).length > 0">
                             <div ng-repeat="image in flight.aircraft.imageIds | filter: { type: 'FLOOR_PLAN' }">
-                              <img ng-src="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" width="430" height="150" />
+                              <img preload-image ng-src="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" width="430" height="150"
+                                 default-image="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]" fallback-image="http://ascentjet.com/rest/aircraft/images/[[ flight.aircraft.aircraftId ]]/[[ image.id ]]"/>
                             </div>
                           </slick>
                         </div>

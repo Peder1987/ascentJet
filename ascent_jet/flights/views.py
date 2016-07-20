@@ -12,7 +12,19 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from .api import get_flight_request, get_flight_requests, get_offer_request, aircraft_images
 
 from fpdf import FPDF
+from django.http import JsonResponse
 
+from django.conf import settings
+from django.core.mail import send_mail
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+
+import json
+
+TEMPLATE_DIR = os.path.join(os.getcwd(), 'common/templates/preview/structure/')
+IMAGE_DIR = os.path.join(os.getcwd(), 'common/static/images/emails/')
 # Get an instance of a logger
 logger = logging.getLogger('ascent_jet.custom')
 
@@ -265,3 +277,77 @@ class BookingView(TemplateView):
         return super(TemplateView, self).render_to_response(context)
 
 booking_request = BookingView.as_view()
+
+
+class SendEmailOnPaymentSuccess(TemplateView):
+    def get(self, request, *args, **kwargs):
+
+        bookData_json = request.GET.get('data')
+        bookId = request.GET.get('id')
+        userEmail = request.GET.get('userEmail')
+        bookData = json.loads(bookData_json)
+
+        userName = request.GET.get('userName')
+        bookingNo = bookData['tripRequestId']
+        aircraftType = bookData['aircraft']['type']
+        operatorInfo = bookData['provider']
+        departure = bookData['legOffers'][0]['departureDate'] + ' - ' + bookData['legOffers'][0]['departureTime']
+        fromInfo = bookData['legOffers'][0]['fromAirportObj']['city'] + ' (' + bookData['legOffers'][0]['fromAirportObj']['code'] + ' ) to '
+        toInfo = bookData['legOffers'][0]['toAirportObj']['city'] + ' (' + bookData['legOffers'][0]['toAirportObj']['code'] + ' )'
+        flightInfo = fromInfo + toInfo
+        price = bookData['currency'] + ' ' + bookData['price']
+
+        content = open(TEMPLATE_DIR + 'email-booking-available.html').read()
+        content = content.replace('{{ userName }}', str(userName))
+        content = content.replace('{{ bookingNo }}', str(bookingNo))
+        content = content.replace('{{ aircraftType }}', str(aircraftType))
+        content = content.replace('{{ operatorInfo }}', str(operatorInfo))
+        content = content.replace('{{ departure }}', str(departure))
+        content = content.replace('{{ flightInfo }}', str(flightInfo))
+        content = content.replace('{{ price }}', str(price))
+
+        smtp = smtplib.SMTP_SSL("secure.emailsrvr.com", 465)
+
+        msg = MIMEMultipart(_subtype='related')
+        msg.attach(MIMEText(content, 'html'))
+
+        header_image = open(IMAGE_DIR + 'header.jpg', 'rb').read()
+        img = MIMEImage(header_image, 'jpeg')
+        img.add_header('Content-Id', '<emailHeader>')
+        msg.attach(img)
+
+        footer_image = open(IMAGE_DIR + 'footer.jpg', 'rb').read()
+        img = MIMEImage(footer_image, 'jpeg')
+        img.add_header('Content-Id', '<emailFooter>')
+        msg.attach(img)
+
+        email_mail = open(IMAGE_DIR + 'email.jpg', 'rb').read()
+        img = MIMEImage(email_mail, 'jpeg')
+        img.add_header('Content-Id', '<emailIcon>')
+        msg.attach(img)
+
+        email_phone = open(IMAGE_DIR + 'phone.jpg', 'rb').read()
+        img = MIMEImage(email_phone, 'jpeg')
+        img.add_header('Content-Id', '<emailPhoneIcon>')
+        msg.attach(img)
+
+        cornerImg = open(IMAGE_DIR + 'corner.jpg', 'rb').read()
+        img = MIMEImage(cornerImg, 'jpeg')
+        img.add_header('Content-Id', '<corner>')
+        msg.attach(img)
+
+        msg['Subject'] = 'payment success'
+        msg['From'] = '%s <%s>' % ("ascentJet", settings.DEFAULT_FROM_EMAIL)
+        msg['To'] = 'pederandes@gmail.com'
+
+        smtp.login("noreply@ascentjet.com", "1Nfromati0n")
+
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to = userEmail
+        try:
+            smtp.sendmail(from_email, to, msg.as_string())
+        finally:
+            smtp.quit()
+
+
+        return JsonResponse({'response': request.GET.get('id')})

@@ -1667,8 +1667,8 @@ textarea.empty {
 slick .slick-next,
 slick .slick-prev {
     display: block;
-    width: 40px !important;
-    height: 40px;
+    width: 28px !important;
+    height: 28px;
     border-radius: 50%;
     background-color: white;
     opacity: 0.7;
@@ -2090,6 +2090,10 @@ nav.main div.container>ul>li {
     position: relative;
     margin-right: 20px
 }
+nav.main div.container>ul>li:nth-child(4) {
+    margin-right: 0;
+    padding-right: 0;
+}
 @media only screen and (min-width: 960px) and (max-width: 1159px) {
     nav.main div.container>ul>li {
         padding: 0 22px 0 0;
@@ -2262,7 +2266,7 @@ section.image.both {
 section.image.both:after {
     content: '';
     position: absolute;
-    height: 160px;
+    height: 140px;
     background: #68b0ec;
     top: -80px;
     left: -80px;
@@ -2327,7 +2331,10 @@ section.image.home:before {
     background: #ffffff
 }
 section.image.first {
-    /*padding-top: 130px*/
+    position: relative;
+    padding-top: 130px;
+    /*padding-bottom: 142px*/
+    padding-bottom: 255px
 }
 section.image.top-blue:after {
     background: #68b0ec
@@ -2355,7 +2362,8 @@ section.image.bottom-light-gray:before {
 }
 section.image.light-gray {
     background: #f5f1f2;
-    padding: 10px 0 120px 0
+    /*padding: 10px 0 120px 0*/
+    padding: 10px 0 62px 0
 }
 section.image.login {
     padding-bottom: 200px
@@ -3151,8 +3159,7 @@ section.results {
 }
 section.clean {
     *zoom: 1;
-    /*padding: 70px 0 20px 0*/
-    padding: 20px 0 20px 0
+    padding: 100px 0 20px 0
 }
 section.clean:after {
     content: '';
@@ -3531,7 +3538,7 @@ footer nav {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
-        padding: 0 30px 30px 30px;border-box
+        padding: 0 30px 30px 30px;
         float: none;
         *zoom: 1
     }
@@ -3639,8 +3646,8 @@ footer div.info p {
 }
 footer div.info div.phones {
     margin-top: 20px;
-    background: #3f4957;
-    padding: 15px 15px 0 15px;
+    /*background: #323a45;*/
+    padding: 15px 15px 0 0;
     position: relative;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -3671,7 +3678,7 @@ footer div.info div.phones:before {
     content: '';
     position: absolute;
     height: 30px;
-    background: #3f4957;
+    /*background: #323a45;*/
     bottom: -10px;
     left: 0px;
     width: 100%;
@@ -3718,7 +3725,7 @@ footer section.image.both:before {
     background: #323a45
 }
 footer section.bottom {
-    background: #323a45;
+    /*background: #323a45;*/
     padding-bottom: 20px;
     position: relative;
     z-index: 1
@@ -4276,7 +4283,7 @@ div.search-form div.tabs div.tab div.row p.field.medium.empty-legs {
     }
 }
 div.search-form div.tabs div.tab div.row p.field.xmedium {
-    width: 165px
+    width: 160px
 }
 @media only screen and (max-width: 767px) {
     div.search-form div.tabs div.tab div.row p.field.xmedium {
@@ -4541,6 +4548,9 @@ div.search-form div.tabs div.tab div.row input {
     font-family: "proxima-nova";
     border: 3px solid #ffffff
 }
+.ie div.search-form div.tabs div.tab div.row input {
+    font-size: 13px
+}
 div.search-form div.tabs div.tab div.row input[type=number] {
     -moz-appearance: textfield;
     -moz-box-sizing: border-box;
@@ -4555,6 +4565,9 @@ div.search-form div.tabs div.tab div.row input[type=number] {
     font-family: "proxima-nova";
     border: 3px solid #ffffff
 }
+.ie div.search-form div.tabs div.tab div.row input[type=number] {
+    font-size: 13px
+}
 div.search-form div.tabs div.tab div.row input[type=number]:hover,
 div.search-form div.tabs div.tab div.row input[type=number]:focus {
     -moz-appearance: number-input
@@ -4564,7 +4577,7 @@ div.search-form div.tabs div.tab div.row input:focus {
 }
 div.search-form div.tabs div.tab div.row input:disabled {
     /*background: rgba(255, 255, 255, 0)*/
-    background: fff
+    color: #323a45
 }
 div.search-form div.tabs div.tab div.row input:disabled textarea {
     color: #8f9399
@@ -4634,6 +4647,9 @@ div.search-form div.tabs div.tab div.row input:-ms-input-placeholder {
     color: #323a45;
     opacity: 1
 }
+div.search-form div.tabs div.tab div.row input[name=time]:-ms-input-placeholder {
+    text-transform: none;
+}
 @media only screen and (max-width: 767px) {
     div.search-form div.tabs div.tab div.row input:-ms-input-placeholder {
         font-size: 14px
@@ -4659,6 +4675,9 @@ div.search-form div.tabs div.tab div.row button {
     font-size: 14px;
     font-family: "proxima-nova";
     padding: 10px
+}
+.firefox div.search-form div.tabs div.tab div.row button {
+    font-size: 12px;
 }
 @media only screen and (max-width: 767px) {
     div.search-form div.tabs div.tab div.row button {
@@ -4842,10 +4861,10 @@ div.tab-container div.last-skew:before {
 }
 @media only screen and (min-width: 1024px) {
     div.tab-container div.last-skew:before {
-        -moz-transform: rotate(-2deg);
-        -ms-transform: rotate(-2deg);
-        -webkit-transform: rotate(-2deg);
-        transform: rotate(-2deg)
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
     }
 }
 @media only screen and (max-width: 767px) {
@@ -6661,7 +6680,7 @@ div.login p .selectize-style .selectize-input:after {
     font-size: 7px;
     border: none;
     color: #323a45;
-    top: 19px;
+    top: 15px;
     right: 25px
 }
 div.login p .selectize-style .selectize-dropdown {
@@ -6861,13 +6880,16 @@ div.login form.login .error-message {
 }
 form.ng-submitted input[type="text"].ng-invalid-required,
 form.ng-submitted input[type="email"].ng-invalid-required,
+form.ng-submitted input[type="email"].ng-invalid-email,
+form.ng-submitted input[type="email"].ng-invalid-pattern,
+form.ng-submitted input[type="email"].ng-invalid-equals,
 form.ng-submitted textarea.ng-invalid-required,
 form.ng-submitted input[type="text"].ng-invalid-pattern,
 form.ng-submitted input[type="password"].ng-invalid-required,
 form.ng-submitted input[type="password"].ng-invalid-minlength,
 form.ng-submitted input[type="password"].ng-invalid-equals {
-    background: #f0d4d2;
-    border: 2px solid #d8b5b3
+    background: #f0d4d2 !important;
+    border: 2px solid #d8b5b3 !important
 }
 form.ng-submitted input[type="checkbox"].ng-invalid-required+label {
     color: #a76e69
@@ -9185,7 +9207,7 @@ div.login p input[type="text"]::-webkit-input-placeholder {
 div.login p input[type="text"]::-moz-placeholder {
     color: #5a6574;
 }
-div.login p input[type="text"]::-ms-input-placeholder {
+div.login p input[type="text"]:-ms-input-placeholder {
     color: #85909E;
 }
 div.login p input[type="password"]::-webkit-input-placeholder {
@@ -9210,6 +9232,11 @@ div.search-form div.tabs div.tab div.row input[type="number"]::-ms-input-placeho
 .ascent-home .search-form {
     width: 97%;
     margin: 0 auto;
+}
+@media only screen and (min-width: 1280px) {
+    .ascent-home .search-form {
+        width: 1160px
+    }
 }
 .ascent-home .search-form-wrapper {
     position: absolute;
@@ -9310,10 +9337,10 @@ div.search-form div.tabs div.tab div.row input[type="number"]::-ms-input-placeho
     width: 100%
 }
 .wait img {
-    width: 50px
+    width: 32px
 }
 div.search-form div.tabs div.tab div.row p.field.xxsmall {
-    width: 102px;
+    /*width: 102px;*/
 }
 #tooltip-emptyLegStart {
     display: none
@@ -9481,4 +9508,250 @@ input:disabled + div.number-spin-btn-container > div.number-spin-btn-down:before
 }
 .print-option .btn.print {
     display: block !important
+}
+.social-buttons {
+    width: 100%;
+    display: inline-block;
+    margin-top: 25px;
+}
+.social-buttons a {
+    width: 32%;
+    display: inline-block
+}
+.social-buttons a:hover {
+    transition: 0.7s;
+    opacity: 0.7
+}
+.slider-prev {
+    position: absolute;
+    top: 57%;
+    left: 15px;
+    margin-top: -16px;
+    outline: 0;
+    width: 32px;
+    height: 32px;
+    z-index: 9999;
+    display: none
+}
+.slider-next {
+    position: absolute;
+    top: 57%;
+    right: 15px;
+    margin-top: -16px;
+    outline: 0;
+    width: 32px;
+    height: 32px;
+    z-index: 9999;
+    display: none
+}
+.slider-prev img, .slider-next img {
+    cursor: pointer
+}
+.slider-prev:hover, .slider-next:hover {
+    transition: 0.5s;
+    opacity: 0.7
+}
+.content-margin {
+    margin-top: 70px;
+}
+.icon-logo:before {
+    content: none !important;
+}
+.ascent-logo {
+    float: left;
+    width: 100%
+}
+.ascent-logo.wide {
+    width: 80%;
+    transition: 0.3s
+}
+.slider {
+    -moz-transition: background-image all 1.5s ease-in-out;
+    -o-transition: background-image all 1.5s ease-in-out;
+    -webkit-transition: background-image all 1.5s ease-in-out;
+    transition: background-image all 1.5s ease-in-out;
+
+    /*-webkit-transition-property: background-image 1s ease-in 300ms;
+    -moz-transition-property: background-image 1s ease-in 300ms;
+    -ms-transition-property: background-image 1s ease-in 300ms;
+    -o-transition-property: background-image 1s ease-in 300ms;*/
+
+    /*-webkit-transition-property: background 1s linear;
+    -moz-transition-property: background 1s linear;
+    -ms-transition-property: background 1s linear;
+    -o-transition-property: background 1s linear;*/
+    /*transition: background 1s linear*/
+}
+.slider-heading h2 {
+    -moz-transition: all 1s ease-in-out;
+    -o-transition: all 1s ease-in-out;
+    -webkit-transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out;
+}
+.slider-heading .lead {
+    -moz-transition: all 1s ease-in-out;
+    -o-transition: all 1s ease-in-out;
+    -webkit-transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out;
+}
+.ie .passenger {
+    position: relative
+}
+.ie .passenger img {
+    width: 13px;
+    opacity: 0.4;
+    cursor: pointer
+}
+.ie .passenger img:hover {
+    opacity: 0.8
+}
+.ie .up-icon {
+    position: absolute;
+    right: 6px;
+    top: 12px
+}
+.ie .down-icon {
+    position: absolute;
+    right: 6px;
+    top: 23px
+}
+
+
+/* slider */
+div#bgImages {
+    width: 100%;
+    height: 100%;
+}
+.headerimg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-size: 100% auto;
+    background-position: top center;
+}
+.pass-change-form {
+    margin-top: 7%;
+    display: inline-block
+}
+.pass-change-form input[type="password"], .email-change-form input[type="email"] {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    width: 450px;
+    float: left;
+    background: #ededed;
+    margin: 0;
+    border: none;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ededed;
+    margin-top: 10px !important
+}
+.pass-change-form input[type="password"]::-webkit-input-placeholder {
+    color: #f00 !important
+}
+.pass-change-form input[type="password"]::-moz-placeholder {
+    color: #f00 !important
+}
+.pass-change-form input[type="password"]:-ms-input-placeholder {
+    color: #f00 !important
+}
+.pass-change-form input[type="password"]:-moz-placeholder {
+    color: #f00 !important
+}
+.pass-change-form input[name="repeat_password"]::-webkit-input-placeholder {
+    color: #a2a5aa !important
+}
+.pass-change-form input[name="repeat_password"]::-moz-placeholder {
+    color: #a2a5aa !important
+}
+.pass-change-form input[name="repeat_password"]:-ms-input-placeholder {
+    color: #a2a5aa !important
+}
+.pass-change-form input[name="repeat_password"]:-moz-placeholder {
+    color: #a2a5aa !important
+}
+.forgotten-password input[type="password"]::-webkit-input-placeholder {
+    color: #f00 !important
+}
+.forgotten-password input[type="password"]::-moz-placeholder {
+    color: #f00 !important
+}
+.forgotten-password input[type="password"]:-ms-input-placeholder {
+    color: #f00 !important
+}
+.forgotten-password input[type="password"]:-moz-placeholder {
+    color: #f00 !important
+}
+.pass-change-form input[type="password"]:focus, .email-change-form input[type="email"]:focus {
+    border: 2px solid #b1c0cc;
+}
+.email-change-form input[type="email"] {
+    margin-top: 10px !important;
+}
+section.account div.main form p.indent .btn.password {
+    margin-top: 10px
+}
+.password-update, .email-update {
+    margin-top: 9px;
+    font-size: 14px;
+    font-weight: bold;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-family: "proxima-nova"
+}
+.btn.empty {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: -2px;
+    border: 1px solid #b1c0cc;
+    background: #ffffff;
+    color: #694e4c;
+    margin-left: 10px;
+    font-size: 14px
+}
+label.pass-update-label, label.email-update-label {
+    width: 130px;
+    float: left;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding-top: 6px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #323a45
+}
+form#passwordUpdateForm .error-message, form#emailUpdateForm .error-message {
+    position: absolute;
+    top: -16px;
+    left: 130px;
+    color: #a76e69;
+    font-size: 14px;
+}
+.update-form {
+    display: inline-block
+}
+.update-label {
+    display: inline-block
+}
+.passform-showhide, .emailform-showhide {
+    width: 450px;
+    float: right
+}
+div.login p .selectize-style .open .selectize-input:after {
+    transform: rotate(180deg);
+    content: "\e60c";
+    font-family: "icomoon";
+    font-size: 7px;
+    border: none;
+    color: #323a45;
+    top: 31px;
+    right: 12px
+}
+.floorplan-container.show .slick-track {
+    width: auto !important;
+    height: 140px
 }

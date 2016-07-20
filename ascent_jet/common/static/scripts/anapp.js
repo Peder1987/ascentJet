@@ -24,7 +24,10 @@ angular
     'webUI',
     'equalModule',
     'slick',
-    'ng.shims.placeholder'
+    'ng.shims.placeholder',
+    'google.places',
+    'angular-preload-image',
+    'ngGeolocation'
   ], function($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
@@ -101,6 +104,13 @@ angular
     .when('/password-changed', {
       templateUrl: viewsPath + 'views/account/password-changed.html'
     })
+    .when('/password-reset', {
+      templateUrl: viewsPath + 'views/account/password-reset.html',
+      controller: 'passwordResetController'
+    })
+    .when('/password-reset-notice', {
+      templateUrl: viewsPath + 'views/account/password-reset-notice.html'
+    })
     .when('/finish/:id', {
       templateUrl: viewsPath + 'views/booking/finish.html',
       controller: 'FinishController'
@@ -122,7 +132,8 @@ angular
   })
   .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
-      key: 'AIzaSyA3cJ5T6MZEWtMiyelStmvig_qwxgKe10A',
+      /*key: 'AIzaSyA3cJ5T6MZEWtMiyelStmvig_qwxgKe10A',*/
+      key: 'AIzaSyC65XA_7pW63F5p5Zk7k-mMbBoOSYsUNCY',
       v: '3.17',
       libraries: 'weather,geometry,visualization'
     });
@@ -151,7 +162,7 @@ angular
     });
     $httpProvider.defaults.withCredentials = true;
     /*$httpProvider.defaults.useXDomain = true;*/
-    $httpProvider.defaults.headers['Access-Control-Allow-Origin'] = 'http://localhost:8000';
+    $httpProvider.defaults.headers['Access-Control-Allow-Origin'] = 'http://95.138.181.224:8000/';
     /*$httpProvider.defaults.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT';*/
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
     $httpProvider.defaults.headers.post = {

@@ -1,0 +1,2 @@
+export BASE_DIR=/var/www/ascent_jet
+export PYTHONPATH=/var/www/ascent_jet/env

@@ -4,7 +4,7 @@
 {% block content %}
 <section class="image slanted first article bottom-light-gray top-light-gray" style="background-image:url('{{ node.image.resource.url }}');"></section>
 {% for article in node.sorted_article_set.all %}
-<section class="image slanted light-gray bottom-white">
+<section class="image light-gray bottom-white">
   <div class="container">
     <div class="side">
       {% if subnavigation %}
@@ -25,7 +25,7 @@
 </section>
 <section class="clean top-light-gray small-margin">
   <div class="container">
-    <div class="content">
+    <div class="content content-margin content-remove">
       {{ article.body | safe }}
     </div>
   </div>
@@ -36,7 +36,7 @@
 {% if article.conclusion %}
 <section class="clean top-light-gray small-margin">
   <div class="container">
-    <div class="content">
+    <div class="content content-margin">
       {{ article.conclusion | safe }}
     </div>
   </div>
@@ -52,7 +52,8 @@
     <h2>{{ category.title }}</h2>
     <div class="side">
       <figure>
-        <img src="{{ category.image.get_thumb_400 }}">
+        <!-- <img id="aircraft_image-{{ forloop.counter }}" src="{{ category.image.get_thumb_400 }}"> -->
+        <img id="aircraft_image-{{ forloop.counter }}" src="">
         {% if category.image.caption %}
         <figcaption>{{ category.image.caption }}</figcaption>
         {% endif %}
@@ -113,6 +114,7 @@
             </div>
           </div>
         </li>
+
         {% endfor %}
       </ul>
     </div>
@@ -129,6 +131,7 @@
       <div class="login contact-form">
         {% if messages %}
         <h1>Thank you for contacting us</h1>
+        <input type="hidden" name="contactSuccess" value="1">
         <p class="lead">
           {% for message in messages %}
           {{ message }}
@@ -136,9 +139,10 @@
         </ul>
       </p>
       {% else %}
-      <form class="login" id="contactForm" name="contactForm" autocomplete="off" novalidate action="/about-us/contact/add/" method="POST">
+      <form class="login" id="contactForm" name="contactForm" ng-controller="ContactController" autocomplete="off" novalidate action="/about-us/contact/add/" method="POST">
         {% csrf_token %}
         <h1>Contact us</h1>
+        <input type="hidden" name="contactSuccess" value="0">
         <p>
           <label for="first_name">Your name</label>
           <input type="text" name="first_name" id="first_name" placeholder="required" value="{{ form.first_name.value }}" required />
@@ -148,8 +152,8 @@
         </p>
         <p>
           <label for="email">Email</label>
-          <input type="text" name="email" id="email" placeholder="required" value="{{ form.email.value }}" required />
-          {% if form.first_name.errors.0 %}
+          <input type="text" name="email" id="email" placeholder="required" value="{{ form.email.value }}" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required />
+          {% if form.email.errors.0 %}
             <span class="email alert-danger error-msg">{{ form.email.errors.0 }}</span>
           {% endif %}
         </p>
@@ -177,5 +181,18 @@
 </section>
 {% endif %}
 
-
+<script type="text/javascript">
+    var airplaneImg = new Array()
+    {% for category in airplane_categories %}
+        airplaneImg.push('{{ category.image.get_thumb_400 }}')
+    {% endfor %}
+    function preLoad(obj) {
+        for(var i=1; i<=obj.length; i++) {
+            var img = new Image()
+            $('#aircraft_image-' + i).attr('src', airplaneImg[i-1])
+        }
+    }
+    preLoad(airplaneImg);
+</script>
 {% endblock %}
+

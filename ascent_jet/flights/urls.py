@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url
 from flights.views import generate_pdf
+from flights.views import SendEmailOnPaymentSuccess
 
 urlpatterns = patterns(
     'flights.views',
@@ -15,4 +16,5 @@ urlpatterns = patterns(
     url(r'^success/', 'offer_status', {'status': 'success'}),
     url(r'^error/', 'offer_status', {'status': 'error'}),
     url(r'^cancel/', 'offer_status', {'status': 'cancel'}),
+    url(r'^payment_success/$', SendEmailOnPaymentSuccess.as_view(), name='flight_request_1')
 )

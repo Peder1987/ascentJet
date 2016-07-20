@@ -10,7 +10,7 @@ log = logging.getLogger('ascent_jet.custom')
 
 
 class ContactForm(ModelForm):
-    captcha = ReCaptchaField()
+    # captcha = ReCaptchaField()
 
     class Meta:
         model = Contact

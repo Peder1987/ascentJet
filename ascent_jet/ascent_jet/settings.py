@@ -64,7 +64,7 @@ INSTALLED_APPS = (
     'structure',
     'airplanes',
     'flights',
-    'contact',
+    'contact'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -136,6 +136,14 @@ DEFAULT_FROM_EMAIL = 'noreply@ascentjet.com'
 EMAIL_HOST = 'secure.emailsrvr.com'
 EMAIL_HOST_USER = 'noreply@ascentjet.com'
 EMAIL_HOST_PASSWORD = '1nfromati0n'
+EMAIL_PORT = '465'
+
+
+#MANDRILL_USER = 'cdeverteuil'
+#MANDRILL_PASS = 'Espr1t12*'
+# MANDRILL_API_KEY = 'RgCJs8gaNGgZph8EDh2RfQ'
+#MANDRILL_API_KEY = 'q1H5oPvBZNbaBu5SBzP29Q'
+
 DEFAULT_TO_EMAIL = "info@ascentjet.com"
 
 if DEBUG:
@@ -147,6 +155,8 @@ else:
     HMAC_KEY = "84c7cbaaa007a47cd256f20b2b0ac447d3b2fbbd6db00a1fdb6fd7299f6a44bbab3239058c21a56ff77a3bed8b1750fe61bb87f9f36c3a310b9799f63104a8d6"
     MERCHANT_ID = "1000011976"
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
 GRAPPELLI_ADMIN_TITLE = 'Ascent Jet Web Admin'
 

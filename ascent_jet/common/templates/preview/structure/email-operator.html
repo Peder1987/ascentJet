@@ -1,7 +1,8 @@
 <table cellpadding="0" cellspacing="0" border="0" style="border:0; width:650px; margin-left:auto; margin-right:auto; font-family:'Arial'; font-size:14px; line-height:22px; color:#323a45;">
   <tr>
     <td colspan="2">
-      <img src="{{STATIC_URL}}images/emails/header.jpg" />
+      <!-- <img src="{{STATIC_URL}}images/emails/header.jpg" /> -->
+      <img src="cid:emailHeader" />
     </td>
   </tr>
   <tr>
@@ -20,7 +21,7 @@
   </tr>
   <tr>
     <td colspan="2">
-      <img src="{{STATIC_URL}}images/emails/footer.jpg" />
+      <img src="cid:emailFooter" style="vertical-align: bottom" />
     </td>
   </tr>
   <tr>
@@ -28,16 +29,16 @@
       <table>
         <tr>
           <td style="padding-left:15px;">
-            <img src="{{STATIC_URL}}images/emails/email-blue.jpg" />
+            <img src="cid:emailIcon" />
           </td>
           <td style="padding-left:10px;">
             <a href="mailto:info@ascentjet.com" style="color:#ffffff; font-size:12px; text-decoration:none;">info@ascentjet.com</a>
           </td>
           <td style="padding-left:20px;">
-            <img src="{{STATIC_URL}}images/emails/phone-blue.jpg" />
+            <img src="cid:emailPhoneIcon" />
           </td>
           <td style="color:#ffffff; font-size:12px; padding-left:10px;">
-            +41 22 366 42 05
+            <a href="tel:+41 22 366 42 05" value="+41223664205" target="_blank" style="color: #fff">+41 22 366 42 05</a>
           </td>
         </tr>
       </table>

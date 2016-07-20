@@ -1,0 +1,16 @@
+<VirtualHost *:80>
+    Alias /static /var/www/ascent_jet/static
+    <Directory /var/www/ascent_jet/static>
+        Require all granted
+    </Directory>
+
+    <Directory /var/www/ascent_jet/ascent_jet>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    WSGIDaemonProcess myproject python-path=/var/www/ascent_jet:/var/www/ascent_jet/env/lib/python2.7/site-packages
+    WSGIProcessGroup myproject
+    WSGIScriptAlias / /var/www/ascent_jet/ascent_jet/wsgi.py
+</VirtualHost>

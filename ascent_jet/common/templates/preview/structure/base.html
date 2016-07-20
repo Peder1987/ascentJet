@@ -11,21 +11,25 @@
   <meta name="format-detection" content="telephone=no">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   {% if DEBUG %}
-  <script src="//localhost:35729/livereload.js"></script>
+  <!--<script src="//localhost:35729/livereload.js"></script>-->
   {% endif %}
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/app.css">
-  <!-- <link rel="stylesheet" href="https://s3.amazonaws.com/icomoon.io/51456/AscentJet/style.css"> -->
-  <!-- <link rel="stylesheet" href="https://s3.amazonaws.com/icomoon.io/51456/AscentJet/style.css?-nl2k0u"> -->
+
   <link rel="stylesheet" href="http://i.icomoon.io/public/fd2a23abe4/AscentJet/style.css">
-  <script src="//use.typekit.net/blb8bgc.js"></script>
+
+  <script src="http://use.typekit.net/blb8bgc.js"></script>
   <script>try{Typekit.load();}catch(e){}</script>
+
+  <!-- <script src="https://use.typekit.net/axj8sug.js"></script>
+  <script>try{Typekit.load({ async: true });}catch(e){}</script> -->
+
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://pilot.datatrans.biz/upp/payment/js/datatrans-1.0.0.js"></script>
   {% block extra_head %}{% endblock %}
   <link rel="shortcut icon" type="image/x-icon" href="/media/static/images/favicon.ico">
 
   {% block javascripts %}
-  <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC65XA_7pW63F5p5Zk7k-mMbBoOSYsUNCY&libraries=places"></script>
   <script src="{{ STATIC_URL }}scripts/lib.js"></script>
   <script src="https://pilot.datatrans.biz/upp/payment/js/datatrans-1.0.2.js"></script>
   <script src="{{ STATIC_URL }}scripts/anapp.js"></script>
@@ -140,7 +144,10 @@
             </ul>
           {% endif %}
           <h1>
-            <a href="/#/" class="icon-logo"><span>Ascent Jet</span></a>
+            <a href="/#/" class="icon-logo">
+              <!-- <span>Ascent Jet</span> -->
+              <img class="ascent-logo" src="{{ STATIC_URL }}images/logo.png">
+            </a>
           </h1>
         </div>
       </nav>
@@ -206,6 +213,7 @@
     </div>
 
   </div>
-  <script src="{{ STATIC_URL }}scripts/app.min.js"></script>
+  <script src="{{ STATIC_URL }}scripts/app.js"></script>
+  <script src="{{ STATIC_URL }}scripts/autocomplete.js"></script>
 </body>
 </html>
